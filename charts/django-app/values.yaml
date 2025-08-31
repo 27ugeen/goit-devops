@@ -1,0 +1,22 @@
+image:
+  repository: 922718141496.dkr.ecr.eu-central-1.amazonaws.com/lesson-7-django
+  tag: v3
+  pullPolicy: IfNotPresent
+
+replicaCount: 1
+
+service:
+  type: LoadBalancer
+  port: 80
+  targetPort: 8000
+
+autoscaling:
+  enabled: true
+  minReplicas: 2
+  maxReplicas: 6
+  targetCPUUtilizationPercentage: 70
+
+config:
+  DJANGO_SETTINGS_MODULE: "goit.settings"
+  DEBUG: "false"
+  ALLOWED_HOSTS: "*"
