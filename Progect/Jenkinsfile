@@ -1,7 +1,7 @@
 pipeline {
   agent {
-  kubernetes {
-    yaml """
+    kubernetes {
+      yaml """
 apiVersion: v1
 kind: Pod
 metadata:
@@ -36,8 +36,8 @@ spec:
       command: ["cat"]
       tty: true
 """
+    }
   }
-}
 
   environment {
     ECR_REGISTRY = "922718141496.dkr.ecr.eu-central-1.amazonaws.com"
@@ -53,18 +53,18 @@ spec:
       steps {
         container('kaniko') {
           sh '''
-    set -eux
+            set -eux
+            cd lesson-4/django
+            pwd
+            ls -la
 
-    echo "WORKSPACE=$WORKSPACE"
-    ls -la "$WORKSPACE/lesson-4/django" || true
-
-    /kaniko/executor \
-      --context="$WORKSPACE/lesson-4/django" \
-      --dockerfile="$WORKSPACE/lesson-4/django/Dockerfile" \
-      --destination="$ECR_REGISTRY/$IMAGE_NAME:$IMAGE_TAG" \
-      --cache=true \
-      --skip-tls-verify
-  '''
+            /kaniko/executor \
+              --context="$(pwd)" \
+              --dockerfile="$(pwd)/Dockerfile" \
+              --destination="$ECR_REGISTRY/$IMAGE_NAME:$IMAGE_TAG" \
+              --cache=true \
+              --skip-tls-verify
+          '''
         }
       }
     }
@@ -74,12 +74,13 @@ spec:
         container('git') {
           withCredentials([usernamePassword(credentialsId: 'github-token', usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD')]) {
             sh '''
+              set -eux
               git clone https://$USERNAME:$PASSWORD@github.com/27ugeen/goit-devops.git
               cd goit-devops
               git checkout lesson-8-9
               cd Progect/charts/django-app
 
-              sed -i "s|tag: .*|tag: $IMAGE_TAG|" values.yaml
+              sed -i "s|^\\s*tag:\\s.*|  tag: $IMAGE_TAG|" values.yaml
 
               git config user.email "$COMMIT_EMAIL"
               git config user.name "$COMMIT_NAME"
