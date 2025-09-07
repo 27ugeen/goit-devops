@@ -16,6 +16,7 @@ spec:
         - name: django
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
           imagePullPolicy: {{ .Values.image.pullPolicy }}
+          command: ["python","-m","http.server","{{ .Values.service.port }}"]
           ports:
             - containerPort: {{ .Values.service.port }}
           envFrom:
