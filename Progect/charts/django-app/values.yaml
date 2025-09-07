@@ -1,22 +1,13 @@
-replicaCount: 2
-
 image:
   repository: 922718141496.dkr.ecr.eu-central-1.amazonaws.com/lesson-7-django
   tag: "v1.7"
+  pullPolicy: Always
 
 service:
   type: LoadBalancer
-  port: 80
+  port: 8000
 
 config:
   DJANGO_SETTINGS_MODULE: "goit.settings"
-  DEBUG: "false"
+  DEBUG: "true"
   ALLOWED_HOSTS: "*"
-
-resources: {}
-
-hpa:
-  enabled: true
-  minReplicas: 2
-  maxReplicas: 6
-  targetCPUUtilizationPercentage: 70

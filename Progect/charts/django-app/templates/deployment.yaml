@@ -1,69 +1,39 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: web-django-app
-  labels:
-    app: web-django-app
+  name: {{ .Release.Name }}-django
 spec:
-  replicas: { { .Values.replicaCount } }
+  replicas: 2
   selector:
     matchLabels:
-      app: web-django-app
+      app: {{ .Release.Name }}-django
   template:
     metadata:
       labels:
-        app: web-django-app
+        app: {{ .Release.Name }}-django
     spec:
       containers:
         - name: django
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
-          imagePullPolicy: IfNotPresent
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
           ports:
-            - containerPort: 8000
+            - containerPort: {{ .Values.service.port }}
           envFrom:
             - configMapRef:
-                name: web-django-app-config
+                name: {{ .Release.Name }}-config
           readinessProbe:
             httpGet:
               path: /
-              port: 8000
-            initialDelaySeconds: 5
+              port: {{ .Values.service.port }}
+            initialDelaySeconds: 20
             periodSeconds: 10
+            timeoutSeconds: 2
+            failureThreshold: 6
           livenessProbe:
             httpGet:
               path: /
-              port: 8000
-            initialDelaySeconds: 15
+              port: {{ .Values.service.port }}
+            initialDelaySeconds: 40
             periodSeconds: 20
-          resources: { { - toYaml .Values.resources | nindent 12 } }
-        - name: postgres
-          image: postgres:14-alpine
-          ports:
-            - containerPort: 5432
-          env:
-            - name: POSTGRES_DB
-              valueFrom:
-                configMapKeyRef:
-                  name: web-django-app-config
-                  key: POSTGRES_DB
-            - name: POSTGRES_USER
-              valueFrom:
-                configMapKeyRef:
-                  name: web-django-app-config
-                  key: POSTGRES_USER
-            - name: POSTGRES_PASSWORD
-              valueFrom:
-                configMapKeyRef:
-                  name: web-django-app-config
-                  key: POSTGRES_PASSWORD
-
-          readinessProbe:
-            tcpSocket:
-              port: 5432
-            initialDelaySeconds: 5
-            periodSeconds: 10
-          livenessProbe:
-            tcpSocket:
-              port: 5432
-            initialDelaySeconds: 10
-            periodSeconds: 20
+            timeoutSeconds: 2
+            failureThreshold: 6
