@@ -1,7 +1,7 @@
 pipeline {
   agent {
-    kubernetes {
-      yaml """
+  kubernetes {
+    yaml """
 apiVersion: v1
 kind: Pod
 metadata:
@@ -22,17 +22,22 @@ spec:
         limits:
           memory: "1Gi"
           cpu: "500m"
-     envFrom:
+      envFrom:
         - secretRef:
             name: aws-creds
+      env:
+        - name: AWS_REGION
+          value: "eu-central-1"
+        - name: AWS_DEFAULT_REGION
+          value: "eu-central-1"
 
     - name: git
       image: alpine/git
       command: ["cat"]
       tty: true
 """
-    }
   }
+}
 
   environment {
     ECR_REGISTRY = "922718141496.dkr.ecr.eu-central-1.amazonaws.com"
