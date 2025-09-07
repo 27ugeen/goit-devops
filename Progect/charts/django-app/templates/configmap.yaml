@@ -5,6 +5,12 @@ metadata:
   labels:
     app: web-django-app
 data:
-  DJANGO_SETTINGS_MODULE: "{{ .Values.config.DJANGO_SETTINGS_MODULE }}"
-  DEBUG: "{{ .Values.config.DEBUG }}"
-  ALLOWED_HOSTS: "{{ .Values.config.ALLOWED_HOSTS }}"
+  DJANGO_SETTINGS_MODULE: "goit.settings"
+  DEBUG: "false"
+  ALLOWED_HOSTS: "*"
+
+  POSTGRES_HOST: "localhost"
+  POSTGRES_PORT: "5432"
+  POSTGRES_DB: "postgres"
+  POSTGRES_USER: "postgres"
+  POSTGRES_PASSWORD: "postgres"

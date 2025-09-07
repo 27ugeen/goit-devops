@@ -5,7 +5,7 @@ metadata:
   labels:
     app: web-django-app
 spec:
-  replicas: {{ .Values.replicaCount }}
+  replicas: { { .Values.replicaCount } }
   selector:
     matchLabels:
       app: web-django-app
@@ -35,4 +35,35 @@ spec:
               port: 8000
             initialDelaySeconds: 15
             periodSeconds: 20
-          resources: {{- toYaml .Values.resources | nindent 12 }}
+          resources: { { - toYaml .Values.resources | nindent 12 } }
+        - name: postgres
+          image: postgres:14-alpine
+          ports:
+            - containerPort: 5432
+          env:
+            - name: POSTGRES_DB
+              valueFrom:
+                configMapKeyRef:
+                  name: web-django-app-config
+                  key: POSTGRES_DB
+            - name: POSTGRES_USER
+              valueFrom:
+                configMapKeyRef:
+                  name: web-django-app-config
+                  key: POSTGRES_USER
+            - name: POSTGRES_PASSWORD
+              valueFrom:
+                configMapKeyRef:
+                  name: web-django-app-config
+                  key: POSTGRES_PASSWORD
+
+          readinessProbe:
+            tcpSocket:
+              port: 5432
+            initialDelaySeconds: 5
+            periodSeconds: 10
+          livenessProbe:
+            tcpSocket:
+              port: 5432
+            initialDelaySeconds: 10
+            periodSeconds: 20
