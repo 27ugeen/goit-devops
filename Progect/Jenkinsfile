@@ -22,6 +22,9 @@ spec:
         limits:
           memory: "1Gi"
           cpu: "500m"
+     envFrom:
+        - secretRef:
+            name: aws-creds
 
     - name: git
       image: alpine/git
