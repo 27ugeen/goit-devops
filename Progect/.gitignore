@@ -1,0 +1,9 @@
+.terraform/
+*.tfstate
+*.tfstate.*
+crash.log
+__pycache__/
+*.pyc
+.DS_Store
+.vscode/
+.idea/
