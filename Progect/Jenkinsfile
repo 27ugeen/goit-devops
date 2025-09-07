@@ -53,17 +53,18 @@ spec:
       steps {
         container('kaniko') {
           sh '''
-          CONTEXT_DIR="lesson-4/django"
-          IMAGE="$ECR_REGISTRY/$IMAGE_NAME:$IMAGE_TAG"
+    set -eux
 
-            /kaniko/executor \
-                --context="$CONTEXT_DIR" \
-                --dockerfile="Dockerfile" \
-                --destination="$IMAGE" \
-                --cache=true \
-                --insecure \
-                --skip-tls-verify
-          '''
+    echo "WORKSPACE=$WORKSPACE"
+    ls -la "$WORKSPACE/lesson-4/django" || true
+
+    /kaniko/executor \
+      --context="$WORKSPACE/lesson-4/django" \
+      --dockerfile="$WORKSPACE/lesson-4/django/Dockerfile" \
+      --destination="$ECR_REGISTRY/$IMAGE_NAME:$IMAGE_TAG" \
+      --cache=true \
+      --skip-tls-verify
+  '''
         }
       }
     }
