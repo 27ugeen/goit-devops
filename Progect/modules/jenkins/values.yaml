@@ -1,0 +1,20 @@
+controller:
+  admin:
+    user: admin
+
+  serviceType: ClusterIP
+
+  installPlugins:
+    - kubernetes
+    - workflow-aggregator
+    - git
+    - configuration-as-code
+
+  JCasC:
+    defaultConfig: true
+
+persistence:
+  enabled: false
+
+rbac:
+  create: true

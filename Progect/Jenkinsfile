@@ -1,0 +1,97 @@
+pipeline {
+  agent {
+    kubernetes {
+      yaml """
+apiVersion: v1
+kind: Pod
+metadata:
+  labels:
+    app: jenkins-kaniko
+spec:
+  serviceAccountName: jenkins-sa
+  containers:
+    - name: kaniko
+      image: gcr.io/kaniko-project/executor:v1.16.0-debug
+      imagePullPolicy: Always
+      command: ["sleep"]
+      args: ["99d"]
+      resources:
+        requests:
+          memory: "512Mi"
+          cpu: "250m"
+        limits:
+          memory: "1Gi"
+          cpu: "500m"
+      envFrom:
+        - secretRef:
+            name: aws-creds
+      env:
+        - name: AWS_REGION
+          value: "eu-central-1"
+        - name: AWS_DEFAULT_REGION
+          value: "eu-central-1"
+
+    - name: git
+      image: alpine/git
+      command: ["cat"]
+      tty: true
+"""
+    }
+  }
+
+  environment {
+    ECR_REGISTRY = "922718141496.dkr.ecr.eu-central-1.amazonaws.com"
+    IMAGE_NAME   = "lesson-7-django"
+    IMAGE_TAG    = "v1.${BUILD_NUMBER}"
+
+    COMMIT_EMAIL = "jenkins@example.local"
+    COMMIT_NAME  = "jenkins-bot"
+  }
+
+  stages {
+    stage('Build & Push Docker Image') {
+      steps {
+        container('kaniko') {
+          sh '''
+            set -eux
+            cd lesson-4/django
+            pwd
+            ls -la
+
+            /kaniko/executor \
+              --context="$(pwd)" \
+              --dockerfile="$(pwd)/Dockerfile" \
+              --destination="$ECR_REGISTRY/$IMAGE_NAME:$IMAGE_TAG" \
+              --cache=true \
+              --skip-tls-verify
+          '''
+        }
+      }
+    }
+
+    stage('Update Chart Tag in Git') {
+      steps {
+        container('git') {
+          withCredentials([usernamePassword(credentialsId: 'github-token', usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD')]) {
+            sh '''
+              set -eux
+              git clone https://$USERNAME:$PASSWORD@github.com/27ugeen/goit-devops.git
+              cd goit-devops
+              git checkout lesson-8-9
+              cd Progect/charts/django-app
+
+              sed -i "s|^\\s*tag:\\s.*|  tag: $IMAGE_TAG|" values.yaml
+
+              git config user.email "$COMMIT_EMAIL"
+              git config user.name "$COMMIT_NAME"
+
+              git add values.yaml
+              git commit -m "Update image tag to $IMAGE_TAG" || echo "No changes"
+              git push origin lesson-8-9
+            '''
+          }
+        }
+      }
+    }
+  }
+}

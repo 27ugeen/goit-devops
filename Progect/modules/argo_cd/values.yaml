@@ -1,0 +1,12 @@
+installCRDs: true
+
+server:
+  service:
+    type: LoadBalancer
+    annotations: {}
+  insecure: true # лишаємо true, щоб простіше залогінитись на демо
+
+configs:
+  cm:
+    # Увімкнемо автостворення AppProject default якщо треба
+    application.instanceLabelKey: argocd.argoproj.io/instance
