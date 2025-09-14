@@ -77,7 +77,7 @@ spec:
               set -eux
               git clone https://$USERNAME:$PASSWORD@github.com/27ugeen/goit-devops.git
               cd goit-devops
-              git checkout lesson-8-9
+              git checkout final-project
               cd Progect/charts/django-app
 
               sed -i "s|^\\s*tag:\\s.*|  tag: $IMAGE_TAG|" values.yaml
