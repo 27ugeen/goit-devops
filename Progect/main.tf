@@ -42,9 +42,9 @@ module "eks" {
   private_subnet_ids = module.vpc.private_subnet_ids
 
   node_group_name    = "ng-main"
-  desired_size       = 2
+  desired_size       = 3
   min_size           = 2
-  max_size           = 4
+  max_size           = 5
   instance_types     = ["t3.small"]
   disk_size          = 20
   kubernetes_version = "1.33"
