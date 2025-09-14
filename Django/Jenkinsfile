@@ -54,7 +54,7 @@ spec:
         container('kaniko') {
           sh '''
             set -eux
-            cd lesson-4/django
+            cd Django/django
             pwd
             ls -la
 
