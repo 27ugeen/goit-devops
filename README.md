@@ -98,6 +98,8 @@ kubectl port-forward svc/jenkins 8080:8080 -n jenkins
 
 ---
 
+![Argo job success](screenshots/argo.jpg)
+
 ## Перевірка застосунку в Kubernetes
 
 ```bash
@@ -114,10 +116,12 @@ curl -I http://<EXTERNAL-HOSTNAME>
 
 ---
 
+![Django-app](screenshots/django.jpg)
+
 ## Схема CI/CD
 
 ```text
-GitHub (branch lesson-8-9)
+GitHub (branch final-project)
        |
     Jenkins (django-ci pipeline)
        |
@@ -169,3 +173,5 @@ kubectl port-forward -n monitoring svc/grafana 3000:80
 Увійти з обліковими даними:
 • Логін: admin
 • Пароль: admin123 (задано при встановленні)
+
+![Grafana](screenshots/grafana.jpg)
