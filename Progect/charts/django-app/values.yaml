@@ -11,3 +11,8 @@ config:
   DJANGO_SETTINGS_MODULE: "goit.settings"
   DEBUG: "true"
   ALLOWED_HOSTS: "*"
+  POSTGRES_NAME: "mydb"
+  POSTGRES_USER: "dbuser"
+  POSTGRES_PASSWORD: "StrongPassword123!"
+  POSTGRES_HOST: "mydb-rds-instance.cxec6oc8020n.eu-central-1.rds.amazonaws.com"
+  POSTGRES_PORT: "5432"
