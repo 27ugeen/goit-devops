@@ -1,5 +1,5 @@
 namespace: argocd
 repoURL: https://github.com/27ugeen/goit-devops.git
-targetRevision: lesson-8-9
+targetRevision: final-project
 path: Progect/charts/django-app
 destinationNS: default

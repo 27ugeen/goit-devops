@@ -4,9 +4,8 @@ server:
   service:
     type: LoadBalancer
     annotations: {}
-  insecure: true # лишаємо true, щоб простіше залогінитись на демо
+  insecure: true
 
 configs:
   cm:
-    # Увімкнемо автостворення AppProject default якщо треба
     application.instanceLabelKey: argocd.argoproj.io/instance
