@@ -1,7 +1,7 @@
 image:
-  repository: 922718141496.dkr.ecr.eu-central-1.amazonaws.com/lesson-7-django
-  tag: v1.12
-  pullPolicy: Always
+  repository: 922718141496.dkr.ecr.eu-central-1.amazonaws.com/final-django
+  tag: v1.0
+  pullPolicy: IfNotPresent
 
 service:
   type: LoadBalancer
