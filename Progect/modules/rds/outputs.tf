@@ -17,3 +17,14 @@ output "db_engine_version" {
   description = "Database engine version"
   value       = var.use_aurora ? var.engine_version_cluster : var.engine_version
 }
+
+output "db_username" {
+  description = "Database master username"
+  value       = var.username
+}
+
+output "db_password" {
+  description = "Database master password"
+  value       = var.password
+  sensitive   = true
+}

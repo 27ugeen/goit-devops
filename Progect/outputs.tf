@@ -25,3 +25,24 @@ output "eks_cluster_endpoint" {
 output "eks_node_group_name" {
   value = module.eks.eks_node_group_name
 }
+
+output "db_endpoint" {
+  description = "Database endpoint (RDS or Aurora)"
+  value       = module.rds.db_endpoint
+}
+
+output "db_name" {
+  description = "Database name"
+  value       = module.rds.db_name
+}
+
+output "db_username" {
+  description = "Database master username"
+  value       = module.rds.db_username
+}
+
+output "db_password" {
+  description = "Database master password"
+  value       = module.rds.db_password
+  sensitive   = true
+}
