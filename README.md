@@ -1,6 +1,6 @@
-# goit-devops
+# Final Project – DevOps GoIT
 
-# DevOps Lesson 8–9 – CI/CD Pipeline with Jenkins, Helm, Terraform & Argo CD
+## CI/CD Pipeline with Terraform, Jenkins, Argo CD, Prometheus & Grafana
 
 ## Опис
 
@@ -9,6 +9,7 @@
 - **Terraform** — для автоматизованого створення AWS інфраструктури (VPC, EKS, ECR, Jenkins, Argo CD);
 - **Jenkins** — для збірки Docker-образу, пушу в ECR і оновлення Helm chart;
 - **Helm + Argo CD** — для автоматичного деплою нової версії застосунку у кластер Kubernetes.
+- **Prometheus + Grafana** — моніторинг стану кластера та застосунку.
 
 ---
 
@@ -39,26 +40,38 @@ terraform apply
 - Argo CD (через Helm)
 - ECR репозиторій
 - Argo Application для `django-app`
+- Prometheus + Grafana (для моніторингу, розгорнуті через Helm у namespace `monitoring`)
 
 ---
 
 ## Перевірка Jenkins job
 
-1. Зайти в інтерфейс Jenkins (`kubectl port-forward` або через LoadBalancer URL):
+1. Отримати адресу Jenkins:
 
-   ```bash
-   kubectl -n jenkins get svc jenkins \
-     -o jsonpath='{.status.loadBalancer.ingress[0].hostname}{"\\n"}'
-   ```
+```bash
+kubectl -n jenkins get svc jenkins \
+ -o jsonpath='{.status.loadBalancer.ingress[0].hostname}{"\n"}'
 
-2. Відкрити Dashboard Jenkins у браузері → знайти job **`django-ci`**.
-3. Запустити або подивитись останній білд.  
+```
+
+або локально:
+
+```bash
+kubectl port-forward svc/jenkins 8080:8080 -n jenkins
+
+```
+
+2. Відкрити Dashboard Jenkins у браузері → знайти job **django-ci**.
+
+3. Запустити або переглянути останній білд.  
    У логах мають бути:
-   - збірка образу Kaniko;
-   - пуш образу у ECR;
-   - коміт у Git з оновленням `image.tag` у `values.yaml`.
 
----
+   - збірка Docker-образу для Django;
+   - пуш образу у Amazon ECR  
+     `922718141496.dkr.ecr.eu-central-1.amazonaws.com/final-django:vX.Y`;
+   - коміт у GitHub з оновленням `image.tag` у `values.yaml`.
+
+![Jenkins job success](screenshots/jenkins.jpg)
 
 ## Argo CD
 
@@ -116,3 +129,43 @@ GitHub (branch lesson-8-9)
        |
   Django app доступний через LoadBalancer
 ```
+
+## Моніторинг Prometheus + Grafana
+
+Для моніторингу застосунків у кластері використовується Prometheus та Grafana.
+
+### Встановлення Prometheus
+
+```bash
+kubectl create namespace monitoring
+
+helm repo add prometheus-community https://prometheus-community.github.io/helm-charts
+helm repo update
+
+helm install prometheus prometheus-community/prometheus \
+  --namespace monitoring
+```
+
+### Встановлення Grafana
+
+```bash
+helm repo add grafana https://grafana.github.io/helm-charts
+helm repo update
+
+helm install grafana grafana/grafana \
+ --namespace monitoring \
+ --set adminPassword=admin123
+
+```
+
+### Доступ до Grafana
+
+```bash
+kubectl port-forward -n monitoring svc/grafana 3000:80
+
+```
+
+Після цього Grafana буде доступна локально: http://localhost:3000
+Увійти з обліковими даними:
+• Логін: admin
+• Пароль: admin123 (задано при встановленні)
